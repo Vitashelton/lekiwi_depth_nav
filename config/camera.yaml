@@ -1,0 +1,23 @@
+# Intel RealSense D435i configuration
+
+camera:
+  # depth frame
+  depth_width: 848
+  depth_height: 480
+  depth_fps: 30
+
+  # RGB frame (optional, not always needed)
+  rgb_width: 848
+  rgb_height: 480
+  rgb_fps: 30
+
+  # Camera intrinsics (approximate for D435i, calibrate for best results)
+  # These are used for angular binning
+  fx: 424.0    # focal length x (pixels)
+  fy: 424.0    # focal length y (pixels)
+  cx: 424.0    # principal point x (pixels)
+  cy: 240.0    # principal point y (pixels)
+
+  # If you set use_external_calib: true, these are loaded from a calibration file
+  use_external_calib: false
+  calib_file: "config/camera_calib.yaml"

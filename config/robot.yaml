@@ -1,0 +1,32 @@
+# LeKiwi omnidirectional mobile robot configuration
+# Parameters match HuggingFace LeRobot LeKiwi defaults
+
+robot:
+  # Physical parameters (lerobot defaults)
+  wheel_radius: 0.05       # meters
+  base_radius: 0.125       # distance from center to wheel, meters
+  max_linear_vel: 0.3      # m/s
+  max_angular_vel: 90.0    # deg/s (lerobot convention: theta.vel in deg/s)
+
+  # Feetech STS3215 motor parameters
+  steps_per_deg: 11.378    # 4096 / 360
+  max_raw: 3000            # max raw command sent to motors (out of ±32767)
+
+  # Control mode: "mock" or "feetech"
+  #   "mock" - no hardware, silently stores commands (for PC testing)
+  #   "feetech" - requires lerobot FeetechMotorsBus on Raspberry Pi
+  control_mode: "mock"
+
+  # Serial port for FeetechMotorsBus (only used when control_mode="feetech")
+  serial_port: "/dev/ttyACM0"
+
+# Motor names matching lerobot LeKiwi convention
+motors:
+  left: "base_left_wheel"
+  back: "base_back_wheel"
+  right: "base_right_wheel"
+
+# Safety limits
+safety:
+  min_scan_distance: 0.10   # emergency stop if any scan < this distance (m)
+  max_cmd_timeout: 0.5      # stop motors if no new cmd within this time (s)

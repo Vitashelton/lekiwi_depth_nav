@@ -1,0 +1,33 @@
+# ZeroMQ network configuration between Raspberry Pi and PC
+
+network:
+  # Transport protocol: "tcp" (reliable, WiFi-friendly) or "ipc" (same machine)
+  transport: "tcp"
+
+  # Raspberry Pi side (publishes scan, subscribes to commands)
+  pi:
+    ip: "0.0.0.0"           # bind to all interfaces
+    scan_pub_port: 5555      # Pi publishes scan on this port
+    cmd_sub_port: 5556       # Pi subscribes to commands on this port
+
+  # PC side (subscribes to scan, publishes commands)
+  pc:
+    ip: "0.0.0.0"           # bind to all interfaces
+    scan_sub_port: 5555      # PC subscribes to scan
+    cmd_pub_port: 5556       # PC publishes velocity commands
+
+  # For convenience when the Pi and PC IPs are known, fill these in:
+  # pi_known_ip: "192.168.1.100"
+  # pc_known_ip: "192.168.1.200"
+
+  # Message formats
+  scan_topic: "scan"
+  cmd_topic: "cmd_vel"
+
+  # ZeroMQ socket options
+  zmq:
+    # High water mark: drop old messages when buffer full
+    send_hwm: 1
+    recv_hwm: 1
+    # Linger period for clean shutdown (ms)
+    linger: 100

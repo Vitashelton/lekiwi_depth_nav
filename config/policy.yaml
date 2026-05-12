@@ -1,0 +1,57 @@
+# Policy configuration
+
+# Active policy: "rule", "dwa", "mlp"
+active_policy: "mlp"
+
+# Scan processing (must match between Pi and PC)
+scan:
+  num_bins: 64              # N = 32, 64, 128
+  min_range: 0.15           # meters
+  max_range: 5.0            # meters
+  normalize: true           # output normalized [0,1] to policy
+
+  # Horizontal band parameters
+  band_top: 220             # row index (from top)
+  band_bottom: 260          # row index
+  fov_deg: 90.0             # horizontal field of view in degrees
+
+# MLP policy network
+mlp:
+  model_path: "models/mlp_sac_policy.pt"
+
+  # Network architecture
+  obs_dim: 67               # 64 scan + 2 velocity + 1 goal_heading
+  act_dim: 3                # vx (m/s), vy (m/s), omega (deg/s)
+  hidden_layers: [256, 256]
+  activation: "relu"
+
+  # Normalization stats (computed during training, loaded from model)
+  obs_mean: null
+  obs_std: null
+
+  # Action scaling: the raw network output in [-1, 1] gets scaled to these
+  # matches lerobot convention: omega in deg/s
+  max_vx: 0.3
+  max_vy: 0.3
+  max_omega: 90.0
+
+# Rule-based policy
+rule:
+  safe_distance: 0.3        # meters - try to keep this clearance
+  danger_distance: 0.2      # meters - hard avoidance
+  forward_speed: 0.2        # m/s default forward speed
+  turn_gain: 30.0           # gain for angular velocity (deg/s per rad error)
+
+# DWA (Dynamic Window Approach) policy
+dwa:
+  max_linear_vel: 0.3       # m/s
+  max_angular_vel: 90.0     # deg/s
+  linear_accel: 0.5         # m/s^2
+  angular_accel: 180.0      # deg/s^2
+  dt: 0.1                   # prediction time step (s)
+  predict_steps: 15         # number of prediction steps
+  heading_weight: 0.3
+  clearance_weight: 1.0
+  velocity_weight: 0.1
+  obstacle_cost_gain: 1.0
+  num_samples: 50           # velocity samples per step
