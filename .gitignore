@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+
+# Claude Code
+.agents/
+.claude/
+skills-lock.json
+
+# Logs & outputs
+logs/*.npz
+logs/*.csv
+
+# Models (trained weights)
+models/*.zip
+models/*.pt
+
+# Video outputs
+*.mp4
+
+# System
+.DS_Store
