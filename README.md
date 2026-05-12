@@ -375,6 +375,28 @@ python tools/replay_scan_log.py --input logs/scan_001.npz --policy rule
 python tools/compute_wasserstein.py --sim logs/sim_scans.npz --real logs/scan_001.npz --plot
 ```
 
+使用
+
+  conda activate lekiwi_rl
+
+  # 测试环境
+  python -c "from sim_mujoco.envs.lekiwi_depth_scan_env import make_env; ..."
+
+  # 渲染视频
+  python sim_mujoco/tools/render_episode.py --world lab_cluttered.xml --policy dwa --output demo.mp4
+
+  # 训练 SAC
+  python sim_mujoco/train/train_sac_mujoco.py --world lab_empty.xml --timesteps 500000
+
+  # 训练残差安全模型
+  python sim_mujoco/train/train_residual_safety.py --episodes 200 --raw-policy rule
+
+  # 评估残差修正
+  python sim_mujoco/eval/evaluate_residual.py --raw-policy rule --residual-model models/residual_correction_mujoco.pt
+
+  # Sim-to-Real 扫描差距
+  python sim_mujoco/eval/sim2real_scan_gap.py --world lab_cluttered.xml --log logs/sim_scans.npz
+
 ## License
 
 MIT
