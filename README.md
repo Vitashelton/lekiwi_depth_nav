@@ -229,6 +229,72 @@ from lerobot.motors.feetech import FeetechMotorsBus
 controller.set_motors_bus(bus)
 ```
 
+## Visualization
+
+### Simulation Visualization
+
+Real-time rendering of the 2D navigation environment with robot, obstacles,
+goal, scan rays, and live metrics.
+
+```bash
+# Rule-based policy with scan rays visible
+python tools/visualize_sim.py --policy rule --episodes 3 --show-rays
+
+# DWA policy
+python tools/visualize_sim.py --policy dwa --scan-bins 64
+
+# Random policy for baseline
+python tools/visualize_sim.py --policy random --episodes 5
+
+# Save rendered frames to video
+python tools/visualize_sim.py --policy rule --show-rays --save-video demo.mp4
+
+# Custom environment settings
+python tools/visualize_sim.py --policy rule --obstacles 12 --seed 123
+```
+
+Controls: close the matplotlib window to stop early.
+
+### Live Scan Viewer
+
+Real-time ZeroMQ scan subscriber with three live views.
+
+```bash
+# Mock mode (no hardware required)
+python tools/live_scan_viewer.py --mock
+
+# From a real Pi stack (reads config/network.yaml)
+python tools/live_scan_viewer.py --config config/
+
+# Direct ZMQ endpoint
+python tools/live_scan_viewer.py --endpoint tcp://192.168.1.100:5555
+
+# Custom scan bins and max range
+python tools/live_scan_viewer.py --mock --scan-bins 128 --max-range 10.0
+```
+
+Shows: linear scan curve, polar scan view, telemetry stats (FPS, seq, net delay),
+and min-range history over time.
+
+### Dashboard
+
+Interactive Streamlit dashboard for exploring recorded scan logs (.npz files).
+
+```bash
+# Install streamlit first
+pip install streamlit
+
+# Launch the dashboard
+streamlit run dashboard/app.py
+```
+
+The dashboard lets you:
+- Upload .npz scan logs or select from `logs/` directory
+- View scan heatmap, single-frame scan curve, and polar scan
+- Inspect min-range history over time
+- Display velocity commands (vx, vy, omega) if logged
+- Show episode success/collision/timeout summary if logged
+
 ## Logging & Analysis
 
 ```bash
