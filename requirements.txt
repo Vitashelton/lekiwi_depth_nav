@@ -2,12 +2,10 @@
 numpy>=1.24.0
 pyzmq>=25.0.0
 pyyaml>=6.0
+torch>=2.0.0
 
 # Camera (Raspberry Pi side)
 pyrealsense2>=2.54.0
-
-# Policy inference
-torch>=2.0.0
 
 # Training
 stable-baselines3>=2.0.0

@@ -13,6 +13,9 @@ skills-lock.json
 logs/*.npz
 logs/*.csv
 
+# Datasets (large binary)
+datasets/*.npz
+
 # Models (trained weights)
 models/*.zip
 models/*.pt

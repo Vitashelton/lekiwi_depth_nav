@@ -49,43 +49,49 @@ lekiwi_depth_nav/
     rule_policy.py        # Rule-based obstacle avoidance
     dwa_policy.py         # DWA local planner
     mlp_policy.py         # PyTorch MLP policy (SAC-trained)
-    policy_server.py      # ZMQ server + policy inference loop
+    geometric_risk.py     # Continuous geometric risk functions
+    residual_correction.py # Learned residual correction MLP
+    policy_server.py      # ZMQ server + policy inference loop (3 modes)
     run_policy_server.py  # PC launcher
   sim/
     simple_2d_env.py      # Gymnasium 2D navigation env
     train_sac.py          # Train with Stable-Baselines3 SAC
     evaluate_policy.py    # Evaluate success/collision/timeout
     generate_random_maps.py
+  train/
+    train_residual_correction.py # Train residual correction model
   tools/
+    visualize_sim.py      # Real-time simulation visualizer
+    live_scan_viewer.py   # Live ZMQ scan viewer (mock/real)
+    generate_residual_dataset.py # Create residual training data
+    evaluate_correction.py # Compare 4 correction methods + charts
     record_scan_log.py    # Save scan data (.npz / .csv)
     replay_scan_log.py    # Replay scan log through policy
     latency_test.py       # Bench depth-to-scan, ZMQ, policy
     bandwidth_test.py     # Compare raw depth vs scan bandwidth
     plot_scan.py          # Visualize scans (linear/polar/heatmap)
     compute_wasserstein.py # Sim-to-real Wasserstein distance
+  dashboard/
+    app.py                # Streamlit scan log explorer
   logs/
   models/
+  datasets/
 ```
 
 ## Installation
 
 ```bash
+# Create conda environment (recommended)
+conda create -n lekiwi_rl python=3.10 -y
+conda activate lekiwi_rl
+
 cd lekiwi_depth_nav
 
-# Core dependencies
-pip install numpy pyzmq pyyaml
-
-# For PC training & inference
-pip install torch stable-baselines3 gymnasium
+# Install all dependencies at once
+pip install -r requirements.txt
 
 # For Raspberry Pi camera (optional, only on Pi)
 pip install pyrealsense2
-
-# For visualization
-pip install matplotlib scipy
-
-# Or install all at once:
-pip install -r requirements.txt
 ```
 
 ## Quick Start (PC only, no hardware)
@@ -248,12 +254,7 @@ python tools/visualize_sim.py --policy random --episodes 5
 
 # Save rendered frames to video
 python tools/visualize_sim.py --policy rule --show-rays --save-video demo.mp4
-
-# Custom environment settings
-python tools/visualize_sim.py --policy rule --obstacles 12 --seed 123
 ```
-
-Controls: close the matplotlib window to stop early.
 
 ### Live Scan Viewer
 
@@ -265,12 +266,6 @@ python tools/live_scan_viewer.py --mock
 
 # From a real Pi stack (reads config/network.yaml)
 python tools/live_scan_viewer.py --config config/
-
-# Direct ZMQ endpoint
-python tools/live_scan_viewer.py --endpoint tcp://192.168.1.100:5555
-
-# Custom scan bins and max range
-python tools/live_scan_viewer.py --mock --scan-bins 128 --max-range 10.0
 ```
 
 Shows: linear scan curve, polar scan view, telemetry stats (FPS, seq, net delay),
@@ -281,19 +276,82 @@ and min-range history over time.
 Interactive Streamlit dashboard for exploring recorded scan logs (.npz files).
 
 ```bash
-# Install streamlit first
-pip install streamlit
+# Generate sample log data first (so dashboard has content)
+python tools/record_scan_log.py --sim --duration 10 --output logs/sample_scans.npz
 
 # Launch the dashboard
 streamlit run dashboard/app.py
 ```
 
-The dashboard lets you:
-- Upload .npz scan logs or select from `logs/` directory
-- View scan heatmap, single-frame scan curve, and polar scan
-- Inspect min-range history over time
-- Display velocity commands (vx, vy, omega) if logged
-- Show episode success/collision/timeout summary if logged
+## Residual Policy Correction
+
+Geometry-aware safety correction for LeRobot / learned policies.
+A lightweight MLP predicts a **bounded residual** Δa that adjusts
+candidate actions into safer navigation commands.
+
+```
+candidate_action (LeRobot)  ──►  ResidualCorrectionNet  ──►  final_action
+                                     ↑
+  scan_m + velocity + goal_heading ──┘
+```
+
+### 1. Generate Residual Dataset
+
+Uses geometric action projection (sampling-based optimization) to
+compute `safer_action` labels from a mock candidate policy.
+
+```bash
+# Small test run (5 episodes)
+python tools/generate_residual_dataset.py --sim --episodes 5 --output datasets/residual_dataset.npz
+
+# Full dataset (200+ episodes recommended)
+python tools/generate_residual_dataset.py --sim --episodes 200 --output datasets/residual_dataset.npz
+```
+
+### 2. Train Residual Correction Network
+
+```bash
+# Train on generated dataset
+python train/train_residual_correction.py --dataset datasets/residual_dataset.npz --epochs 50
+
+# With GPU
+python train/train_residual_correction.py --dataset datasets/residual_dataset.npz --epochs 100 --device cuda
+```
+
+### 3. Evaluate & Visualize All Methods
+
+Compares four action sources side-by-side with **interactive matplotlib charts**:
+bar chart, radar chart, trajectory overlay, and risk-over-time curves.
+
+```bash
+# Text + charts (default)
+python tools/evaluate_correction.py --episodes 30
+
+# With trained residual model
+python tools/evaluate_correction.py --episodes 50 --residual-model models/residual_correction.pt
+
+# Text-only (headless / no GUI)
+python tools/evaluate_correction.py --episodes 30 --no-plot
+```
+
+Output visualization includes:
+- **Bar chart**: success / collision / timeout rates per method
+- **Radar chart**: normalized safety profile (higher = better)
+- **Trajectory overlay**: robot paths on the same map, color-coded by method
+- **Risk curve**: per-step collision risk for each method
+
+### 4. Deploy with Policy Server
+
+```bash
+# Raw candidate policy (no correction)
+python pc/run_policy_server.py --config config/ --mode lerobot_raw
+
+# Rule-based safety shield
+python pc/run_policy_server.py --config config/ --mode rule_shield
+
+# Learned residual correction
+python pc/run_policy_server.py --config config/ --mode residual_correction --residual-model models/residual_correction.pt
+```
 
 ## Logging & Analysis
 
