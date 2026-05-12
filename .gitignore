@@ -19,6 +19,7 @@ datasets/*.npz
 # Models (trained weights)
 models/*.zip
 models/*.pt
+maps/*.json
 
 # Video outputs
 *.mp4

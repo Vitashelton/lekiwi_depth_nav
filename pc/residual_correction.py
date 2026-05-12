@@ -81,6 +81,8 @@ class ResidualCorrectionNet(nn.Module):
         # Normalization stats (set after training)
         self.register_buffer("input_mean", torch.zeros(input_dim))
         self.register_buffer("input_std", torch.ones(input_dim))
+        self.register_buffer("y_mean", torch.zeros(act_dim))
+        self.register_buffer("y_std", torch.ones(act_dim))
 
         # Max action bounds (for clipping final action)
         self.register_buffer(
@@ -97,11 +99,11 @@ class ResidualCorrectionNet(nn.Module):
         Returns:
             (B, act_dim) residual Δa in physical units.
         """
-        # Normalize
         x_norm = (x - self.input_mean) / (self.input_std + 1e-8)
         raw = self._net(x_norm)
-        # Tanh squashing → bounded in [-residual_scale, residual_scale]
-        residual = torch.tanh(raw) * self.residual_scale
+        # Tanh squashing → bounded in [-1, 1], then denormalize to physical scale
+        residual_norm = torch.tanh(raw)
+        residual = residual_norm * self.y_std + self.y_mean
         return residual
 
     # ------------------------------------------------------------------
@@ -168,11 +170,19 @@ class ResidualCorrectionNet(nn.Module):
 
     # ------------------------------------------------------------------
     def set_normalization(
-        self, mean: np.ndarray, std: np.ndarray
+        self,
+        x_mean: np.ndarray,
+        x_std: np.ndarray,
+        y_mean: np.ndarray | None = None,
+        y_std: np.ndarray | None = None,
     ) -> None:
-        """Set input normalization statistics."""
-        self.input_mean = torch.from_numpy(mean).float()
-        self.input_std = torch.from_numpy(std).float()
+        """Set normalization statistics for input and output."""
+        self.input_mean = torch.from_numpy(x_mean).float()
+        self.input_std = torch.from_numpy(x_std).float()
+        if y_mean is not None:
+            self.y_mean = torch.from_numpy(y_mean).float()
+        if y_std is not None:
+            self.y_std = torch.from_numpy(y_std).float()
 
     # ------------------------------------------------------------------
     def save(self, path: str | Path) -> None:
@@ -183,6 +193,8 @@ class ResidualCorrectionNet(nn.Module):
                 "state_dict": self.state_dict(),
                 "input_mean": self.input_mean,
                 "input_std": self.input_std,
+                "y_mean": self.y_mean,
+                "y_std": self.y_std,
                 "residual_scale": self.residual_scale,
                 "action_max": self.action_max,
                 "scan_dim": self.scan_dim,
@@ -209,6 +221,8 @@ class ResidualCorrectionNet(nn.Module):
         model.load_state_dict(ckpt["state_dict"])
         model.input_mean = ckpt["input_mean"]
         model.input_std = ckpt["input_std"]
+        model.y_mean = ckpt.get("y_mean", torch.zeros(ckpt["act_dim"]))
+        model.y_std = ckpt.get("y_std", torch.ones(ckpt["act_dim"]))
         model.residual_scale = ckpt["residual_scale"]
         model.action_max = ckpt["action_max"]
         return model

@@ -55,11 +55,17 @@ def load_dataset(
     x_std = X[train_idx].std(axis=0)
     x_std = np.where(x_std < 1e-8, 1.0, x_std)
 
+    # Per-dimension Y normalization — critical: vx,vy ~ ±0.3, omega ~ ±90
+    y_mean = Y[train_idx].mean(axis=0)
+    y_std = Y[train_idx].std(axis=0)
+    y_std = np.where(y_std < 1e-8, 1.0, y_std)
+    print(f"  y_mean: {y_mean}, y_std: {y_std}")
+
     # Build datasets
     X_train = (X[train_idx] - x_mean) / x_std
-    Y_train = Y[train_idx]
+    Y_train = (Y[train_idx] - y_mean) / y_std
     X_val = (X[val_idx] - x_mean) / x_std
-    Y_val = Y[val_idx]
+    Y_val = (Y[val_idx] - y_mean) / y_std
 
     train_ds = TensorDataset(
         torch.from_numpy(X_train), torch.from_numpy(Y_train)
@@ -68,7 +74,7 @@ def load_dataset(
         torch.from_numpy(X_val), torch.from_numpy(Y_val)
     )
 
-    return train_ds, val_ds, x_mean, x_std
+    return train_ds, val_ds, x_mean, x_std, y_mean, y_std
 
 
 def train(
@@ -176,7 +182,7 @@ def main() -> None:
     print(f"Device: {args.device}")
     print(f"Loading {args.dataset} ...")
 
-    train_ds, val_ds, x_mean, x_std = load_dataset(
+    train_ds, val_ds, x_mean, x_std, y_mean, y_std = load_dataset(
         args.dataset, val_split=args.val_split, seed=args.seed,
     )
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
@@ -187,7 +193,7 @@ def main() -> None:
         max_residual_v=args.max_residual_v,
         max_residual_omega=args.max_residual_omega,
     )
-    model.set_normalization(x_mean, x_std)
+    model.set_normalization(x_mean, x_std, y_mean, y_std)
 
     print(f"Model: {sum(p.numel() for p in model.parameters())} parameters")
     print(f"Training {args.epochs} epochs, batch_size={args.batch_size} ...\n")
