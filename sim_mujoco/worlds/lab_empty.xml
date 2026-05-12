@@ -1,0 +1,23 @@
+<mujoco model="lab_empty">
+  <include file="../assets/lekiwi_base.xml"/>
+
+  <option timestep="0.005">
+    <flag contact="enable"/>
+  </option>
+
+  <worldbody>
+    <!-- Room: 5m × 6m rectangle -->
+    <!-- Floor already included by lekiwi_base.xml -->
+
+    <!-- Walls: 0.1m thick, 1.2m high -->
+    <geom name="wall_north" type="box" size="2.5 0.05 0.6" pos="2.5 3.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_south" type="box" size="2.5 0.05 0.6" pos="2.5 -0.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_east"  type="box" size="0.05 3.0 0.6" pos="5.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_west"  type="box" size="0.05 3.0 0.6" pos="-0.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+
+    <!-- Ceiling marker (visual only) -->
+    <site name="room_center" pos="2.5 1.5 0.01" size="0.1"/>
+  </worldbody>
+
+  <!-- No obstacles — empty room -->
+</mujoco>

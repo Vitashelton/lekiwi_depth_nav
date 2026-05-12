@@ -1,0 +1,30 @@
+<mujoco model="lab_corridor">
+  <include file="../assets/lekiwi_base.xml"/>
+
+  <worldbody>
+    <!-- Long corridor: 1.5m wide, 5m long passage -->
+    <!-- Outer walls -->
+    <geom name="wall_north" type="box" size="2.5 0.05 0.6" pos="2.5 3.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_south" type="box" size="2.5 0.05 0.6" pos="2.5 -0.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_east"  type="box" size="0.05 3.0 0.6" pos="5.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_west"  type="box" size="0.05 3.0 0.6" pos="-0.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+
+    <!-- Corridor inner walls (lower half) -->
+    <geom name="corr_bottom_left"  type="box" size="1.2 0.05 0.6" pos="1.25 0.55 0.6" rgba="0.65 0.65 0.65 1"/>
+    <geom name="corr_bottom_right" type="box" size="1.2 0.05 0.6" pos="3.75 0.55 0.6" rgba="0.65 0.65 0.65 1"/>
+
+    <!-- Corridor inner walls (upper half) -->
+    <geom name="corr_top_left"  type="box" size="1.2 0.05 0.6" pos="1.25 2.45 0.6" rgba="0.65 0.65 0.65 1"/>
+    <geom name="corr_top_right" type="box" size="1.2 0.05 0.6" pos="3.75 2.45 0.6" rgba="0.65 0.65 0.65 1"/>
+
+    <!-- Clutter along corridor walls: small boxes -->
+    <body name="clutter_1" pos="1.0 0.8 0.15">
+      <geom name="cb1" type="box" size="0.12 0.10 0.12" rgba="0.8 0.7 0.5 1" mass="1.0"/>
+      <freejoint/>
+    </body>
+    <body name="clutter_2" pos="4.0 2.2 0.15">
+      <geom name="cb2" type="box" size="0.10 0.12 0.12" rgba="0.7 0.6 0.4 1" mass="1.0"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>

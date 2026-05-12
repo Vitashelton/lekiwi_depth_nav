@@ -1,0 +1,54 @@
+<mujoco model="lab_cluttered">
+  <include file="../assets/lekiwi_base.xml"/>
+
+  <worldbody>
+    <!-- Room: 5m × 6m -->
+    <geom name="wall_north" type="box" size="2.5 0.05 0.6" pos="2.5 3.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_south" type="box" size="2.5 0.05 0.6" pos="2.5 -0.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_east"  type="box" size="0.05 3.0 0.6" pos="5.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_west"  type="box" size="0.05 3.0 0.6" pos="-0.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+
+    <!-- Desk area -->
+    <body name="desk_1" pos="1.5 0.8 0.375">
+      <include file="../assets/table.xml"/>
+    </body>
+    <body name="desk_2" pos="3.5 2.4 0.375">
+      <include file="../assets/table.xml"/>
+    </body>
+
+    <!-- Chairs -->
+    <body name="chair_1" pos="1.2 1.5 0.45">
+      <include file="../assets/chair.xml"/>
+    </body>
+    <body name="chair_2" pos="3.8 0.9 0.45">
+      <include file="../assets/chair.xml"/>
+    </body>
+    <body name="chair_3" pos="2.5 1.8 0.45">
+      <include file="../assets/chair.xml"/>
+    </body>
+
+    <!-- Scattered boxes -->
+    <body name="box_1" pos="0.8 2.2 0.15">
+      <geom name="b1" type="box" size="0.2 0.15 0.15" rgba="0.8 0.7 0.5 1" mass="1.5"/>
+      <freejoint/>
+    </body>
+    <body name="box_2" pos="4.2 1.2 0.15">
+      <geom name="b2" type="box" size="0.15 0.2 0.15" rgba="0.7 0.6 0.4 1" mass="1.5"/>
+      <freejoint/>
+    </body>
+    <body name="box_3" pos="2.8 0.5 0.15">
+      <geom name="b3" type="box" size="0.12 0.12 0.12" rgba="0.75 0.65 0.45 1" mass="1.0"/>
+      <freejoint/>
+    </body>
+    <body name="box_4" pos="1.5 2.8 0.15">
+      <geom name="b4" type="box" size="0.18 0.12 0.15" rgba="0.7 0.6 0.4 1" mass="1.2"/>
+      <freejoint/>
+    </body>
+
+    <!-- A pillar / column -->
+    <body name="pillar" pos="3.2 1.5 0.6">
+      <geom name="pillar_geom" type="cylinder" size="0.12 0.6" rgba="0.6 0.6 0.6 1" mass="20"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>

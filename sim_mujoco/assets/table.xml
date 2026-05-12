@@ -1,0 +1,16 @@
+<mujoco model="table">
+  <!-- Standard lab table: 1.2m × 0.6m × 0.75m -->
+  <worldbody>
+    <body name="table" pos="0 0 0.375">
+      <!-- Tabletop -->
+      <geom name="table_top" type="box" size="0.6 0.3 0.025" pos="0 0 0.375"
+            rgba="0.75 0.65 0.5 1" mass="15"/>
+      <!-- Legs -->
+      <geom name="leg_1" type="cylinder" size="0.025 0.36" pos="0.55 0.25 0.01" rgba="0.5 0.4 0.3 1" mass="2"/>
+      <geom name="leg_2" type="cylinder" size="0.025 0.36" pos="-0.55 0.25 0.01" rgba="0.5 0.4 0.3 1" mass="2"/>
+      <geom name="leg_3" type="cylinder" size="0.025 0.36" pos="0.55 -0.25 0.01" rgba="0.5 0.4 0.3 1" mass="2"/>
+      <geom name="leg_4" type="cylinder" size="0.025 0.36" pos="-0.55 -0.25 0.01" rgba="0.5 0.4 0.3 1" mass="2"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>

@@ -1,0 +1,76 @@
+# LeKiwi MuJoCo Simulation Configuration
+# =========================================
+# Main config for the MuJoCo-based LeKiwi navigation environment.
+# This replaces the toy sim/simple_2d_env.py for paper-grade experiments.
+
+# Robot physical parameters (matches lerobot LeKiwi)
+robot:
+  base_radius: 0.125        # center-to-wheel distance (m)
+  wheel_radius: 0.05        # omniwheel radius (m)
+  chassis_radius: 0.15      # collision body radius (m)
+  chassis_mass: 2.5         # kg
+  max_linear_vel: 0.3       # m/s
+  max_angular_vel: 90.0     # deg/s (lerobot convention)
+  wheel_angles_deg: [150.0, -90.0, 30.0]
+  angle_offset_deg: -90.0   # lerobot convention offset
+
+# Velocity controller (prevents instant acceleration)
+velocity_controller:
+  max_linear_accel: 0.5     # m/s^2
+  max_angular_accel: 180.0  # deg/s^2
+  lowpass_alpha: 0.3        # 1.0 = instant, 0.0 = frozen
+  dt: 0.05
+
+# D435i pseudo-LiDAR sensor
+scan:
+  num_bins: 64
+  fov_deg: 90.0
+  min_range: 0.15
+  max_range: 5.0
+  ray_height: 0.10          # height of ray origin above ground (m)
+  noise:
+    gaussian_std: 0.02
+    dropout_prob: 0.01
+    max_range_miss_prob: 0.02
+    angular_bias_std: 0.0
+    enable: true
+
+# Environment
+env:
+  room_w: 5.0               # meters
+  room_h: 6.0               # meters
+  goal_tolerance: 0.3       # meters
+  max_episode_steps: 600
+  dt: 0.05
+
+  # Reward weights
+  rewards:
+    goal_reward: 20.0
+    collision_penalty: 10.0
+    timeout_penalty: 0.0
+    progress_weight: 1.0
+    clearance_weight: 0.2
+    smoothness_weight: 0.05
+    spin_penalty_weight: 0.5
+    stagnation_penalty_weight: 0.3
+    forward_weight: 0.3
+
+  # Start-goal pairs for each world
+  start_goal_pairs:
+    - [[0.5, 1.5], [4.0, 1.5]]
+    - [[0.5, 0.5], [4.0, 2.5]]
+    - [[1.0, 2.5], [3.5, 0.5]]
+
+# Domain randomization
+domain_rand:
+  obstacle_pos_std: 0.10    # m
+  friction_range: [0.4, 0.9]
+  mass_scale_range: [0.8, 1.2]
+  scan_noise_scale: 1.0
+  start_goal_jitter: 0.2    # m
+  enable: false
+
+# Action smoothing
+action_smoothing:
+  alpha: 0.4
+  history_size: 3

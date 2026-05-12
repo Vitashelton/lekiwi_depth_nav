@@ -1,0 +1,34 @@
+# SAC Training Configuration for MuJoCo LeKiwi
+
+# Training
+total_timesteps: 500000
+n_envs: 4                   # parallel envs for vectorized training
+learning_rate: 3.0e-4
+buffer_size: 100000
+batch_size: 256
+tau: 0.005
+gamma: 0.99
+ent_coef: "auto"
+train_freq: 1
+gradient_steps: 1
+
+# Network
+policy: "MlpPolicy"
+net_arch: [256, 256]
+
+# Logging
+log_dir: "logs/tensorboard/sac_mujoco"
+eval_freq: 10000
+n_eval_episodes: 5
+
+# Model saving
+save_freq: 50000
+model_dir: "models"
+
+# Environment
+world: "lab_empty.xml"       # default training world
+scan_bins: 64
+max_episode_steps: 600
+
+# Domain randomization
+use_domain_rand: false

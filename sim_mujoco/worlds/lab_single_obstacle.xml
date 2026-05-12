@@ -1,0 +1,17 @@
+<mujoco model="lab_single_obstacle">
+  <include file="../assets/lekiwi_base.xml"/>
+
+  <worldbody>
+    <!-- Room: 5m × 6m -->
+    <geom name="wall_north" type="box" size="2.5 0.05 0.6" pos="2.5 3.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_south" type="box" size="2.5 0.05 0.6" pos="2.5 -0.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_east"  type="box" size="0.05 3.0 0.6" pos="5.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_west"  type="box" size="0.05 3.0 0.6" pos="-0.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+
+    <!-- Single cardboard box between start and goal -->
+    <body name="obstacle_box" pos="2.5 1.5 0.15">
+      <geom name="box_body" type="box" size="0.25 0.2 0.2" rgba="0.8 0.7 0.5 1" mass="1.5"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>

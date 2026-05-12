@@ -1,0 +1,17 @@
+<mujoco model="chair">
+  <!-- Lab chair: ~0.45m × 0.45m × 0.9m -->
+  <worldbody>
+    <body name="chair" pos="0 0 0.45">
+      <geom name="seat" type="box" size="0.2 0.2 0.02" pos="0 0 0.43"
+            rgba="0.3 0.3 0.4 1" mass="3"/>
+      <geom name="back" type="box" size="0.2 0.02 0.25" pos="0 -0.18 0.65"
+            rgba="0.25 0.25 0.35 1" mass="2"/>
+      <!-- Legs -->
+      <geom name="cleg_1" type="cylinder" size="0.015 0.42" pos="0.17 0.17 0.21" rgba="0.2 0.2 0.2 1" mass="1"/>
+      <geom name="cleg_2" type="cylinder" size="0.015 0.42" pos="-0.17 0.17 0.21" rgba="0.2 0.2 0.2 1" mass="1"/>
+      <geom name="cleg_3" type="cylinder" size="0.015 0.42" pos="0.17 -0.17 0.21" rgba="0.2 0.2 0.2 1" mass="1"/>
+      <geom name="cleg_4" type="cylinder" size="0.015 0.42" pos="-0.17 -0.17 0.21" rgba="0.2 0.2 0.2 1" mass="1"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>

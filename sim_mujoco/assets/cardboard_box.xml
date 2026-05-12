@@ -1,0 +1,10 @@
+<mujoco model="cardboard_box">
+  <!-- Cardboard box: ~0.4m × 0.3m × 0.3m -->
+  <worldbody>
+    <body name="box" pos="0 0 0.15">
+      <geom name="box_geom" type="box" size="0.2 0.15 0.15"
+            rgba="0.8 0.7 0.5 1" mass="1.5"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>

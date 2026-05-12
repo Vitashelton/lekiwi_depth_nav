@@ -1,0 +1,34 @@
+# Residual Safety Model Training Configuration
+
+# Data generation
+num_episodes: 200
+max_steps_per_episode: 600
+raw_policy: "rule"           # rule / dwa / path_to_sac_model
+worlds:
+  - "lab_empty.xml"
+  - "lab_single_obstacle.xml"
+  - "lab_corridor.xml"
+  - "lab_narrow_gap.xml"
+  - "lab_cluttered.xml"
+
+# Training
+epochs: 50
+batch_size: 256
+learning_rate: 1.0e-3
+residual_norm_weight: 0.01
+val_split: 0.1
+
+# Network
+hidden_dims: [128, 64]
+max_residual_v: 0.15         # m/s
+max_residual_omega: 30.0     # deg/s
+
+# Dataset
+dataset_path: "datasets/residual_dataset_mujoco.npz"
+
+# Model saving
+model_dir: "models"
+model_name: "residual_correction_mujoco.pt"
+
+# Device
+device: "cuda"

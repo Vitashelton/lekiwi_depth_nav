@@ -1,0 +1,99 @@
+<mujoco model="lekiwi_base">
+  <compiler angle="degree" meshdir="assets"/>
+
+  <option timestep="0.005" gravity="0 0 -9.81">
+    <flag contact="enable" gravity="enable"/>
+  </option>
+
+  <default>
+    <geom type="cylinder" density="500" friction="0.6 0.3 0.3" condim="3"/>
+    <joint type="hinge" armature="0.001" damping="0.01"/>
+    <default class="floor">
+      <geom type="plane" size="10 10 0.1" rgba="0.85 0.85 0.85 1"/>
+    </default>
+    <default class="wall">
+      <geom type="box" rgba="0.7 0.7 0.7 1" density="1000"/>
+    </default>
+  </default>
+
+  <!-- ====== World floor ====== -->
+  <worldbody>
+    <geom class="floor" pos="0 0 0"/>
+    <light directional="true" pos="4 0 8" dir="0 0 -1" diffuse="0.9 0.9 0.9"/>
+    <light directional="true" pos="-4 4 6" dir="0 0 -1" diffuse="0.3 0.3 0.3"/>
+
+    <!-- ====== LeKiwi omnidirectional base ====== -->
+    <body name="lekiwi_base" pos="0 0 0.06">
+      <!-- Chassis: flat cylinder, radius 0.15m, height 0.06m -->
+      <geom name="chassis_body" type="cylinder" size="0.15 0.03"
+            pos="0 0 0.03" rgba="0.2 0.3 0.7 1" mass="2.5"/>
+      <!-- Top plate marker -->
+      <geom name="chassis_top" type="cylinder" size="0.12 0.005"
+            pos="0 0 0.065" rgba="0.3 0.4 0.8 1" mass="0.1"/>
+
+      <!-- Front direction indicator -->
+      <geom name="front_marker" type="box" size="0.03 0.01 0.01"
+            pos="0.13 0 0.07" rgba="1 0.5 0 1" mass="0.01"/>
+
+      <!-- 3 omniwheels at 150°, -90°, 30° from forward -->
+      <!-- Wheel 1: left-rear (150° / 5π/6) -->
+      <body name="wheel_1" pos="0.108 -0.0625 0.025">
+        <joint name="wheel_1_joint" type="hinge" axis="0 1 0"/>
+        <geom name="wheel_1_geom" type="cylinder" size="0.05 0.012"
+              pos="0 0 0" rgba="0.2 0.2 0.2 1" mass="0.08"/>
+        <geom name="roller_1" type="sphere" size="0.008" pos="0.05 0 0"
+              rgba="0.5 0.5 0.5 1" mass="0.005"/>
+      </body>
+
+      <!-- Wheel 2: back (-90° / -π/2) -->
+      <body name="wheel_2" pos="0 0.125 0.025">
+        <joint name="wheel_2_joint" type="hinge" axis="1 0 0"/>
+        <geom name="wheel_2_geom" type="cylinder" size="0.05 0.012"
+              pos="0 0 0" rgba="0.2 0.2 0.2 1" mass="0.08"/>
+        <geom name="roller_2" type="sphere" size="0.008" pos="0.05 0 0"
+              rgba="0.5 0.5 0.5 1" mass="0.005"/>
+      </body>
+
+      <!-- Wheel 3: right-front (30° / π/6) -->
+      <body name="wheel_3" pos="0.108 0.0625 0.025">
+        <joint name="wheel_3_joint" type="hinge" axis="-1 0 0"/>
+        <geom name="wheel_3_geom" type="cylinder" size="0.05 0.012"
+              pos="0 0 0" rgba="0.2 0.2 0.2 1" mass="0.08"/>
+        <geom name="roller_3" type="sphere" size="0.008" pos="0.05 0 0"
+              rgba="0.5 0.5 0.5 1" mass="0.005"/>
+      </body>
+
+      <!-- D435i camera mount point (referenced by d435i_mount.xml) -->
+      <site name="camera_mount" pos="0.10 0 0.08" euler="0 -15 0" size="0.01"/>
+    </body>
+
+    <!-- ====== Goal marker ====== -->
+    <body name="goal_marker" pos="3 0 0.02" mocap="true">
+      <geom name="goal_geom" type="cylinder" size="0.3 0.01"
+            rgba="1 0 0 0.5" mass="0"/>
+      <site name="goal_site" pos="0 0 0.02" size="0.05"/>
+    </body>
+  </worldbody>
+
+  <!-- ====== Actuators ====== -->
+  <actuator>
+    <motor name="motor_1" joint="wheel_1_joint" ctrlrange="-30 30" gear="1"/>
+    <motor name="motor_2" joint="wheel_2_joint" ctrlrange="-30 30" gear="1"/>
+    <motor name="motor_3" joint="wheel_3_joint" ctrlrange="-30 30" gear="1"/>
+  </actuator>
+
+  <!-- ====== Sensors ====== -->
+  <sensor>
+    <!-- Robot position & orientation -->
+    <framepos name="robot_pos" objtype="body" objname="lekiwi_base"/>
+    <framequat name="robot_quat" objtype="body" objname="lekiwi_base"/>
+    <framelinvel name="robot_linvel" objtype="body" objname="lekiwi_base"/>
+    <frameangvel name="robot_angvel" objtype="body" objname="lekiwi_base"/>
+    <!-- Goal relative position -->
+    <framepos name="goal_pos" objtype="body" objname="goal_marker"/>
+    <!-- Wheel velocities -->
+    <actuatorfrc name="actuator_force_1" actuator="motor_1"/>
+    <actuatorfrc name="actuator_force_2" actuator="motor_2"/>
+    <actuatorfrc name="actuator_force_3" actuator="motor_3"/>
+  </sensor>
+</mujoco>

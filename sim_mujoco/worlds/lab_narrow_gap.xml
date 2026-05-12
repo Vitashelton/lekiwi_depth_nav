@@ -1,0 +1,31 @@
+<mujoco model="lab_narrow_gap">
+  <include file="../assets/lekiwi_base.xml"/>
+
+  <worldbody>
+    <!-- Room: 5m × 6m -->
+    <geom name="wall_north" type="box" size="2.5 0.05 0.6" pos="2.5 3.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_south" type="box" size="2.5 0.05 0.6" pos="2.5 -0.05 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_east"  type="box" size="0.05 3.0 0.6" pos="5.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+    <geom name="wall_west"  type="box" size="0.05 3.0 0.6" pos="-0.05 1.5 0.6" rgba="0.7 0.7 0.7 1"/>
+
+    <!-- Two tables forming a 0.65m narrow gap -->
+    <!-- Left table -->
+    <body name="table_left" pos="2.0 0.85 0.375">
+      <include file="../assets/table.xml"/>
+    </body>
+    <!-- Right table -->
+    <body name="table_right" pos="2.0 2.15 0.375">
+      <include file="../assets/table.xml"/>
+    </body>
+
+    <!-- Boxes flanking the gap -->
+    <body name="box_left" pos="1.85 1.1 0.15">
+      <geom name="bl" type="box" size="0.15 0.1 0.15" rgba="0.8 0.7 0.5 1" mass="1.0"/>
+      <freejoint/>
+    </body>
+    <body name="box_right" pos="2.15 1.9 0.15">
+      <geom name="br" type="box" size="0.15 0.1 0.15" rgba="0.8 0.7 0.5 1" mass="1.0"/>
+      <freejoint/>
+    </body>
+  </worldbody>
+</mujoco>
